@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 4642641123548972362}
   - component: {fileID: 2164005688102346151}
   - component: {fileID: -3768007096764441239}
+  - component: {fileID: -2740219852039854848}
+  - component: {fileID: -8470651632005697473}
   m_Layer: 0
   m_Name: YellowBall
   m_TagString: Untagged
@@ -124,7 +126,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outlineMode: 0
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
+  outlineWidth: 5
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!114 &-2740219852039854848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4642641123548972340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6483dfecaea468195c9526a6c68c104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8470651632005697473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4642641123548972340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7066c611bfbf46c0900f9769c9acc536, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

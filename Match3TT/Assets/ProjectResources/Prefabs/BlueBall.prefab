@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 5109155460237814766}
   - component: {fileID: 7449907961933231345}
   - component: {fileID: 8736025624386208167}
+  - component: {fileID: 2895823207730610315}
+  - component: {fileID: 5813146869837533260}
   m_Layer: 0
   m_Name: BlueBall
   m_TagString: Untagged
@@ -124,7 +126,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outlineMode: 0
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
+  outlineWidth: 5
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!114 &2895823207730610315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5109155460237814764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6483dfecaea468195c9526a6c68c104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5813146869837533260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5109155460237814764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7066c611bfbf46c0900f9769c9acc536, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

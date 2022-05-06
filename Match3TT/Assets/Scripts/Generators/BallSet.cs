@@ -1,74 +1,110 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Balls;
-using Extensions;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace Generators
 {
-    public class BallSet : MonoBehaviour
+    public class BallSet : IBallSet
     {
         private const int FieldSize = 6;
+        private const int DistanceBetweenCells = 2;
 
-        [SerializeField] private Transform ballsParent;
-        [SerializeField] private Transform ballPlacesTransform;
+        private IBallSwapper ballSwapper;
+        
+        private List<GameObject> ballsObjects;
+        private Ball[,] balls;
+        private Vector3 startPosition;
+        private Transform playFieldTransform;
 
-        private List<GameObject> _ballsObjects;
-        private Ball[,] _balls;
+        public BallSet(IBallSwapper ballSwapper) => 
+            this.ballSwapper = ballSwapper;
 
-        private void Awake()
+        public void SetBalls()
         {
+            playFieldTransform = PlayFieldTransform();   
             InitBalls();
+            InitStartPosition();
             InitBallObjects();
+            SetupBalls();
+        }
 
-            FillBallsArray();
+        private void SetupBalls()
+        {
+            var parent = InstantiateBallParent();
+            var firstBallPlacePosition = startPosition;
+
+            for (var i = 0; i < FieldSize; i++)
+            {
+                for (var j = 0; j < FieldSize; j++)
+                {
+                    balls[i, j] = InstantiateBall(firstBallPlacePosition, parent, i, j);
+
+                    firstBallPlacePosition = UpdatePosition(
+                        firstBallPlacePosition,
+                        firstBallPlacePosition.x + DistanceBetweenCells,
+                        firstBallPlacePosition.y);
+                }
+
+                firstBallPlacePosition = UpdatePosition(
+                    firstBallPlacePosition,
+                    1,
+                    firstBallPlacePosition.y - DistanceBetweenCells);
+            }
+
+            ballSwapper.Balls = balls;
+        }
+
+        private Transform InstantiateBallParent()
+        {
+            var parent = new GameObject(Constants.BallsParent).transform;
+            parent.SetParent(playFieldTransform);
+            parent.localPosition = Vector3.zero;
+            parent.localScale = Vector3.one;
+
+            return parent;
+        }
+
+        private Ball InstantiateBall(Vector3 firstBallPlacePosition, Transform parent, int x, int y)
+        {
+            var newBall = Object.Instantiate(GetBall()).transform;
+            newBall.SetParent(parent);
+            newBall.localPosition = firstBallPlacePosition;
+            newBall.localScale = Vector3.one;
+
+            var ballMove = newBall.GetComponent<BallMove>();
+            var ball = newBall.GetComponent<Ball>();
+            ball.PlaceInFieldArray = new Vector2(x, y);
+            
+            ballSwapper.SubscribeBallClick(ballMove);
+
+            return ball;
         }
 
         private void InitBallObjects()
         {
-            _ballsObjects = new List<GameObject>();
+            ballsObjects = new List<GameObject>();
 
             foreach (var ballColor in Enum.GetValues(typeof(BallColor)))
-                _ballsObjects.Add(Addressables.LoadAssetAsync<GameObject>(ballColor + "Ball").WaitForCompletion());
+                ballsObjects.Add(Addressables.LoadAssetAsync<GameObject>(ballColor + Constants.Ball).WaitForCompletion());
         }
+
+        private Vector3 UpdatePosition(Vector3 position, float x = 0, float y = 0) => 
+            new Vector3(x, y, position.z);
+
+        private Transform PlayFieldTransform() => 
+            GameObject.FindWithTag(Constants.PlayField).transform;
+
+        private void InitStartPosition() => 
+            startPosition = new Vector3(1, 0, 0);
 
         private void InitBalls() => 
-            _balls = new Ball[FieldSize, FieldSize];
-
-        private void FillBallsArray()
-        {
-            var i = 0;
-            var j = 0;
-
-            var sortedBallPositions = SortBallPositions();
-
-            foreach (var ballPlace in sortedBallPositions)
-            {
-                _balls[i,j] = Instantiate(
-                    GetBall(), 
-                    ballPlace.transform.position, 
-                    Quaternion.identity, ballsParent).GetComponent<Ball>();
-                
-                j++;
-
-                if (j < FieldSize) continue;
-                
-                j = 0;
-                i++;
-            }
-        }
-
-        private List<Transform> SortBallPositions() =>
-            ballPlacesTransform.transform
-                .AllChild()
-                .OrderBy(s => s.position.x)
-                .ThenBy(s => s.position.y)
-                .ToList();
+            balls = new Ball[FieldSize, FieldSize];
 
         private GameObject GetBall() => 
-            _ballsObjects[Random.Range(0, _ballsObjects.Count)];
+            ballsObjects[Random.Range(0, ballsObjects.Count)];
     }
 }

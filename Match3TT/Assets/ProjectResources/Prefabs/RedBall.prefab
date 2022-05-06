@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 211694599750777768}
   - component: {fileID: 7532657665139862273}
   - component: {fileID: -1979807904176647667}
+  - component: {fileID: -2893930038381954512}
+  - component: {fileID: 7918266312137655278}
   m_Layer: 0
   m_Name: RedBall
   m_TagString: Untagged
@@ -124,7 +126,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outlineMode: 0
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
+  outlineWidth: 5
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!114 &-2893930038381954512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211694599750777770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6483dfecaea468195c9526a6c68c104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7918266312137655278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211694599750777770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7066c611bfbf46c0900f9769c9acc536, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

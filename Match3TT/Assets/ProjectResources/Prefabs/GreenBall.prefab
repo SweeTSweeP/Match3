@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 1660341578209675151}
   - component: {fileID: 7703360774728209278}
   - component: {fileID: -3849169542287354916}
+  - component: {fileID: -7923774797809325104}
+  - component: {fileID: -2876048316123633945}
   m_Layer: 0
   m_Name: GreenBall
   m_TagString: Untagged
@@ -124,7 +126,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outlineMode: 0
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
+  outlineWidth: 5
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!114 &-7923774797809325104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1660341578209675149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6483dfecaea468195c9526a6c68c104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-2876048316123633945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1660341578209675149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7066c611bfbf46c0900f9769c9acc536, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
