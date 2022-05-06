@@ -30,6 +30,7 @@ namespace Balls
             if (IsBallsNear(secondBall))
             {
                 SwapBalls(secondBall);
+                //TODO Add check for second ball
                 var ballsToCollect = CollectBalls(
                     (int) selectedBall.PlaceInFieldArray.x,
                     (int) selectedBall.PlaceInFieldArray.y);
@@ -77,7 +78,7 @@ namespace Balls
                 if (Balls[x, i].BallColor == Balls[x, i + 1].BallColor) collectedBalls.Add(Balls[x, i + 1]);
             }
 
-            for (var i = y; i > 1; i--)
+            for (var i = y; i > 0; i--)
             {
                 if (Balls[x, i].BallColor == Balls[x, i - 1].BallColor) collectedBalls.Add(Balls[x, i - 1]);
             }
@@ -94,7 +95,7 @@ namespace Balls
                 if (Balls[i, y].BallColor == Balls[i + 1, y].BallColor) collectedBalls.Add(Balls[i + 1, y]);
             }
             
-            for (var i = x; i > 1; i--)
+            for (var i = x; i > 0; i--)
             {
                 if (Balls[i, y].BallColor == Balls[i - 1, y].BallColor) collectedBalls.Add(Balls[i - 1, y]);
             }
