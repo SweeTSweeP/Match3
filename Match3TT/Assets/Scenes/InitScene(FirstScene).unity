@@ -372,6 +372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecbccf627abf05141840a064c9e5cb61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coroutineRunner: {fileID: 74157723}
 --- !u!114 &985064047
 MonoBehaviour:
   m_ObjectHideFlags: 0

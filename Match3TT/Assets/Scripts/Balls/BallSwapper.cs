@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Balls
 {
@@ -29,6 +30,10 @@ namespace Balls
             if (IsBallsNear(secondBall))
             {
                 SwapBalls(secondBall);
+                var ballsToCollect = CollectBalls(
+                    (int) selectedBall.PlaceInFieldArray.x,
+                    (int) selectedBall.PlaceInFieldArray.y);
+                StopSwap(secondBall);
             }
             else
             {
@@ -48,8 +53,53 @@ namespace Balls
 
             (selectedBall.PlaceInFieldArray, secondBall.PlaceInFieldArray) = 
                 (secondBall.PlaceInFieldArray, selectedBall.PlaceInFieldArray);
+        }
 
-            StopSwap(secondBall);
+        private List<Ball> CollectBalls(int x, int y)
+        {
+            var collectedBalls = LeftRightBallsCollection(x, y);
+
+            if (collectedBalls.Count >= 3) return collectedBalls;
+
+            collectedBalls = UpDownBallsCollection(x, y);
+
+            if (collectedBalls.Count >= 3) return collectedBalls;
+
+            return null;
+        }
+
+        private List<Ball> LeftRightBallsCollection(int x, int y)
+        {
+            var collectedBalls = new List<Ball> {Balls[x, y]};
+
+            for (var i = y; i < FieldSize-1; i++)
+            {
+                if (Balls[x, i].BallColor == Balls[x, i + 1].BallColor) collectedBalls.Add(Balls[x, i + 1]);
+            }
+
+            for (var i = y; i > 1; i--)
+            {
+                if (Balls[x, i].BallColor == Balls[x, i - 1].BallColor) collectedBalls.Add(Balls[x, i - 1]);
+            }
+
+            return collectedBalls;
+        }
+
+        private List<Ball> UpDownBallsCollection(int x, int y)
+        {
+            var collectedBalls = new List<Ball> {Balls[x, y]};
+
+            for (var i = x; i < FieldSize - 1; i++)
+            {
+                if (Balls[i, y].BallColor == Balls[i + 1, y].BallColor) collectedBalls.Add(Balls[i + 1, y]);
+            }
+            
+            for (var i = x; i > 1; i--)
+            {
+                if (Balls[i, y].BallColor == Balls[i - 1, y].BallColor) collectedBalls.Add(Balls[i - 1, y]);
+            }
+
+            return collectedBalls;
         }
 
         private void StopSwap(Ball secondBall)
