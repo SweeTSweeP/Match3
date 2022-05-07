@@ -1,6 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Balls;
+using Infrastructure.Bootstrapper;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Object = UnityEngine.Object;
@@ -13,15 +16,22 @@ namespace Generators
         private const int FieldSize = 6;
         private const int DistanceBetweenCells = 2;
 
-        private IBallSwapper ballSwapper;
-        
+        private readonly IBallSwapper ballSwapper;
+        private readonly ICoroutineRunner coroutineRunner;
+
         private List<GameObject> ballsObjects;
         private Ball[,] balls;
         private Vector3 startPosition;
         private Transform playFieldTransform;
+        private Transform ballsParent;
 
-        public BallSet(IBallSwapper ballSwapper) => 
+        private int score;
+
+        public BallSet(IBallSwapper ballSwapper, ICoroutineRunner coroutineRunner)
+        {
             this.ballSwapper = ballSwapper;
+            this.coroutineRunner = coroutineRunner;
+        }
 
         public void SetBalls()
         {
@@ -34,14 +44,14 @@ namespace Generators
 
         private void SetupBalls()
         {
-            var parent = InstantiateBallParent();
+            ballsParent = InstantiateBallParent();
             var firstBallPlacePosition = startPosition;
 
             for (var i = 0; i < FieldSize; i++)
             {
                 for (var j = 0; j < FieldSize; j++)
                 {
-                    balls[i, j] = InstantiateBall(firstBallPlacePosition, parent, i, j);
+                    balls[i, j] ??= InstantiateBall(firstBallPlacePosition, ballsParent, i, j);
 
                     firstBallPlacePosition = UpdatePosition(
                         firstBallPlacePosition,
@@ -56,6 +66,7 @@ namespace Generators
             }
 
             ballSwapper.Balls = balls;
+            ballSwapper.RowsDetected += UpdateField;
         }
 
         private Transform InstantiateBallParent()
@@ -106,5 +117,67 @@ namespace Generators
 
         private GameObject GetBall() => 
             ballsObjects[Random.Range(0, ballsObjects.Count)];
+
+        private void UpdateField(List<Ball> ballsToDestroy) => 
+            coroutineRunner.StartCoroutine(WaitForFieldUpdate(ballsToDestroy));
+
+        private IEnumerator WaitForFieldUpdate(List<Ball> ballsToDestroy)
+        {
+            yield return new WaitForSeconds(0.3f);
+
+            var emptyPlaces = ballsToDestroy
+                .ToDictionary(k => k.PlaceInFieldArray, v => v.transform.localPosition);
+            
+            score += ballsToDestroy.Count;
+            Debug.Log($"Score:{score}");
+            
+            DestroyBalls(ballsToDestroy);
+
+            yield return new WaitForSeconds(0.3f);
+            
+            DropBalls();
+
+            yield return new WaitForSeconds(0.3f);
+            
+            SetupBalls();
+
+            score = 0;
+        }
+
+        private void DropBalls()
+        {
+            for (var j = 0; j < FieldSize; j++)
+            {
+                var count = 0;
+                
+                for (var i = FieldSize-1; i >= 0; i--)
+                {
+                    if (balls[i, j] != null)
+                    {
+                        balls[i, j].transform.localPosition -= new Vector3(0, count * DistanceBetweenCells, 0);
+                        balls[i, j].PlaceInFieldArray -= new Vector2(count, 0);
+
+                        (balls[i, j], balls[i + count, j]) = (balls[i + count, j], balls[i, j]);
+
+                        i -= count;
+                        count = 0;
+                    }
+                    else
+                    {
+                        count++;
+                    }
+                }
+            }
+        }
+
+        private void DestroyBalls(List<Ball> ballsToDestroy)
+        {
+            foreach (var ball in ballsToDestroy.Where(ball =>
+                         balls[(int) ball.PlaceInFieldArray.x, (int) ball.PlaceInFieldArray.y] != null))
+            {
+                Object.Destroy(balls[(int) ball.PlaceInFieldArray.x, (int) ball.PlaceInFieldArray.y].gameObject);
+                balls[(int) ball.PlaceInFieldArray.x, (int) ball.PlaceInFieldArray.y] = null;
+            }
+        }
     }
 }

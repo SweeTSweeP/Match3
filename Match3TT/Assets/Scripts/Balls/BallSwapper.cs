@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Balls
@@ -8,7 +10,8 @@ namespace Balls
         private const int FieldSize = 6;
         
         private Ball selectedBall;
-        private Direction direction;
+
+        public event Action<List<Ball>> RowsDetected;
 
         public Ball[,] Balls { get; set; }
 
@@ -30,16 +33,48 @@ namespace Balls
             if (IsBallsNear(secondBall))
             {
                 SwapBalls(secondBall);
-                //TODO Add check for second ball
-                var ballsToCollect = CollectBalls(
-                    (int) selectedBall.PlaceInFieldArray.x,
-                    (int) selectedBall.PlaceInFieldArray.y);
-                StopSwap(secondBall);
+                var balls = ComputeBallsToDestroy(secondBall);
+
+                if (balls.Count >= 3)
+                {
+                    StopSwap(secondBall);
+                    RowsDetected?.Invoke(balls);
+                }
+                else
+                {
+                    SwapBalls(secondBall);
+                    StopSwap(secondBall);
+                }
             }
             else
             {
                 StopSwap(secondBall);
             }
+        }
+
+        private List<Ball> ComputeBallsToDestroy(Ball secondBall)
+        {
+            var ballsToCollectFromSelectedBall = CollectBalls(
+                (int) selectedBall.PlaceInFieldArray.x,
+                (int) selectedBall.PlaceInFieldArray.y);
+
+            ballsToCollectFromSelectedBall = ballsToCollectFromSelectedBall
+                .Where(s => s.BallColor == selectedBall.BallColor).ToList();
+
+            if (ballsToCollectFromSelectedBall.Count < 3)
+                ballsToCollectFromSelectedBall.Clear();
+
+            var ballsToCollectFromSecondBall = CollectBalls(
+                (int) secondBall.PlaceInFieldArray.x,
+                (int) secondBall.PlaceInFieldArray.y);
+
+            ballsToCollectFromSecondBall = ballsToCollectFromSecondBall
+                .Where(s => s.BallColor == secondBall.BallColor).ToList();
+
+            if (ballsToCollectFromSecondBall.Count >= 3)
+                ballsToCollectFromSelectedBall.AddRange(ballsToCollectFromSecondBall);
+
+            return ballsToCollectFromSelectedBall;
         }
 
         private void SwapBalls(Ball secondBall)
@@ -58,16 +93,32 @@ namespace Balls
 
         private List<Ball> CollectBalls(int x, int y)
         {
-            var collectedBalls = LeftRightBallsCollection(x, y);
+            var firstCollectedBalls = LeftRightBallsCollection(x, y);
+            
+            if (firstCollectedBalls.Count < 3) 
+            {
+                firstCollectedBalls.Clear();
+                var secondCollectedBalls = UpDownBallsCollection(x, y);
+                
+                if (secondCollectedBalls.Count >= 3) firstCollectedBalls.AddRange(secondCollectedBalls);
+            }
+            else
+            {
+                var otherCollectedBalls = new List<Ball>();
+                
+                foreach (var secondCollectedBalls in GetLinkedRows(firstCollectedBalls))
+                    otherCollectedBalls.AddRange(secondCollectedBalls);
 
-            if (collectedBalls.Count >= 3) return collectedBalls;
-
-            collectedBalls = UpDownBallsCollection(x, y);
-
-            if (collectedBalls.Count >= 3) return collectedBalls;
-
-            return null;
+                if (otherCollectedBalls.Count > 3) firstCollectedBalls.AddRange(otherCollectedBalls);
+            }
+            
+            return firstCollectedBalls.Distinct().ToList();
         }
+
+        private IEnumerable<List<Ball>> GetLinkedRows(List<Ball> firstCollectedBalls) =>
+            firstCollectedBalls
+                .Select(ball => UpDownBallsCollection((int)ball.PlaceInFieldArray.x, (int)ball.PlaceInFieldArray.y))
+                .Where(secondCollectedBalls => secondCollectedBalls.Count >= 3);
 
         private List<Ball> LeftRightBallsCollection(int x, int y)
         {
@@ -109,7 +160,6 @@ namespace Balls
             secondBall.gameObject.GetComponent<Outline>().enabled = false;
 
             selectedBall = null;
-            direction = Direction.None;
         }
 
         private bool IsSelectedBallClickedSecondTime(BallMove ballMove)
@@ -129,37 +179,28 @@ namespace Balls
         {
             var rightCellPosition = selectedBall.PlaceInFieldArray + new Vector2(0, 1);
             if (!(rightCellPosition.y < FieldSize)) return false;
-            if (rightCellPosition != secondBall.PlaceInFieldArray) return false;
-            direction = Direction.Right;
-            return true;
-
+            return rightCellPosition == secondBall.PlaceInFieldArray;
         }
 
         private bool IsNearLeftCell(Ball secondBall)
         {
             var leftCellPosition = selectedBall.PlaceInFieldArray - new Vector2(0, 1);
             if (!(leftCellPosition.y >= 0)) return false;
-            if (leftCellPosition != secondBall.PlaceInFieldArray) return false;
-            direction = Direction.Left;
-            return true;
+            return leftCellPosition == secondBall.PlaceInFieldArray;
         }
 
         private bool IsNearBottomCell(Ball secondBall)
         {
             var bottomCellPosition = selectedBall.PlaceInFieldArray + new Vector2(1, 0);
             if (!(bottomCellPosition.x < FieldSize)) return false;
-            if (bottomCellPosition != secondBall.PlaceInFieldArray) return false;
-            direction = Direction.Bottom;
-            return true;
+            return bottomCellPosition == secondBall.PlaceInFieldArray;
         }
 
         private bool IsNearTopCell(Ball secondBall)
         {
             var topCellPosition = selectedBall.PlaceInFieldArray - new Vector2(1, 0);
             if (!(topCellPosition.x >= 0)) return false;
-            if (topCellPosition != secondBall.PlaceInFieldArray) return false;
-            direction = Direction.Up;
-            return true;
+            return topCellPosition == secondBall.PlaceInFieldArray;
         }
     }
 }

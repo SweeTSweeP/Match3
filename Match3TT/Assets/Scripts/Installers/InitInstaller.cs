@@ -3,7 +3,6 @@ using Generators;
 using Infrastructure.Bootstrapper;
 using Infrastructure.SceneLoad;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace Installers
