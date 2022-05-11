@@ -7,6 +7,9 @@ using Zenject;
 
 namespace Infrastructure.Bootstrapper
 {
+    /// <summary>
+    /// Application entry point
+    /// </summary>
     public class Bootstrap : MonoBehaviour, ICoroutineRunner
     {
         private ISceneLoader _sceneLoader;

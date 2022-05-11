@@ -1,8 +1,10 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Balls
 {
+    /// <summary>
+    /// Outline ball if clicked
+    /// </summary>
     [RequireComponent(typeof(Outline))]
     public class OutlineBall : MonoBehaviour
     {

@@ -2,12 +2,13 @@
 using Infrastructure.Bootstrapper;
 using Infrastructure.GameControl;
 using Infrastructure.SceneLoad;
-using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace Infrastructure.States
 {
+    /// <summary>
+    /// First state to setup dependencies before game
+    /// </summary>
     public class BootstrapState : IState
     {
         private readonly GameStateMachine gameStateMachine;
@@ -24,6 +25,9 @@ namespace Infrastructure.States
             this.coroutineRunner = coroutineRunner;
         }
 
+        /// <summary>
+        /// Enter to state
+        /// </summary>
         public void Enter()
         {
             sceneLoader.LoadScene(SceneNames.MenuScene);
@@ -33,6 +37,10 @@ namespace Infrastructure.States
 
         public void Exit() { }
 
+        /// <summary>
+        /// Enter to next state 
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator EnterMenuState()
         {
             while (SceneManager.GetActiveScene().name != SceneNames.MenuScene)

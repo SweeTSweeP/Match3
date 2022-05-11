@@ -9,6 +9,9 @@ using UnityEngine.UI;
 
 namespace Infrastructure.States
 {
+    /// <summary>
+    /// Main state to load game field
+    /// </summary>
     public class LevelState : IState
     {
         private readonly GameStateMachine gameStateMachine;
@@ -28,11 +31,18 @@ namespace Infrastructure.States
             this.ballSet = ballSet;
         }
 
+        /// <summary>
+        /// Enter to state
+        /// </summary>
         public void Enter() => 
             coroutineRunner.StartCoroutine(StateEnter());
 
         public void Exit() { }
-
+        
+        /// <summary>
+        /// Entering to state
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator StateEnter()
         {
             while (SceneManager.GetActiveScene().name != SceneNames.MainScene)
@@ -42,6 +52,9 @@ namespace Infrastructure.States
             OnClickMenuButton();
         }
 
+        /// <summary>
+        /// Add button listener to enter other state
+        /// </summary>
         private void OnClickMenuButton()
         {
             var playButton = GameObject.FindWithTag(Constants.MenuButton)?.GetComponent<Button>();

@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Balls
 {
+    /// <summary>
+    /// Describes ball swap logic and also verify if its possible
+    /// </summary>
     public class BallSwapper : IBallSwapper
     {
         private const int FieldSize = 6;
@@ -15,9 +18,17 @@ namespace Balls
 
         public Ball[,] Balls { get; set; }
 
+        /// <summary>
+        /// Observe each ball if was clicked
+        /// </summary>
+        /// <param name="ballMove"></param>
         public void SubscribeBallClick(BallMove ballMove) => 
             ballMove.BallSelected += DetectSelectedBall;
 
+        /// <summary>
+        /// Try to detect if two balls were selected
+        /// </summary>
+        /// <param name="ballMove"></param>
         private void DetectSelectedBall(BallMove ballMove)
         {
             if (IsSelectedBallClickedSecondTime(ballMove)) return;
@@ -28,6 +39,10 @@ namespace Balls
                 TryToSwapBalls(ballMove.gameObject.GetComponent<Ball>());
         }
 
+        /// <summary>
+        /// Method to check if two balls is near and if its possible destroy balls after swap
+        /// </summary>
+        /// <param name="secondBall"></param>
         private void TryToSwapBalls(Ball secondBall)
         {
             if (IsBallsNear(secondBall))
@@ -52,6 +67,11 @@ namespace Balls
             }
         }
 
+        /// <summary>
+        /// Find balls which will be destroyed after swap
+        /// </summary>
+        /// <param name="secondBall"></param>
+        /// <returns>list of balls to destroy</returns>
         private List<Ball> ComputeBallsToDestroy(Ball secondBall)
         {
             var ballsToCollectFromSelectedBall = CollectBalls(
@@ -77,6 +97,10 @@ namespace Balls
             return ballsToCollectFromSelectedBall;
         }
 
+        /// <summary>
+        /// Change balls positions on scene and on array
+        /// </summary>
+        /// <param name="secondBall"></param>
         private void SwapBalls(Ball secondBall)
         {
             (Balls[(int) selectedBall.PlaceInFieldArray.x, (int) selectedBall.PlaceInFieldArray.y],
@@ -91,6 +115,12 @@ namespace Balls
                 (secondBall.PlaceInFieldArray, selectedBall.PlaceInFieldArray);
         }
 
+        /// <summary>
+        /// Find rows of balls with similar color 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns>list of balls in rows with the same color</returns>
         private List<Ball> CollectBalls(int x, int y)
         {
             var firstCollectedBalls = LeftRightBallsCollection(x, y);
@@ -115,11 +145,22 @@ namespace Balls
             return firstCollectedBalls.Distinct().ToList();
         }
 
+        /// <summary>
+        /// Return rows with same color balls after the swap
+        /// </summary>
+        /// <param name="firstCollectedBalls"></param>
+        /// <returns>List of balls of linked rows</returns>
         private IEnumerable<List<Ball>> GetLinkedRows(List<Ball> firstCollectedBalls) =>
             firstCollectedBalls
                 .Select(ball => UpDownBallsCollection((int)ball.PlaceInFieldArray.x, (int)ball.PlaceInFieldArray.y))
                 .Where(secondCollectedBalls => secondCollectedBalls.Count >= 3);
 
+        /// <summary>
+        /// Horizontal search of same color balls
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns>List of balls in row</returns>
         private List<Ball> LeftRightBallsCollection(int x, int y)
         {
             var collectedBalls = new List<Ball> {Balls[x, y]};
@@ -137,6 +178,12 @@ namespace Balls
             return collectedBalls;
         }
 
+        /// <summary>
+        /// Vertical search of same color balls in row
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns>List of balls in row</returns>
         private List<Ball> UpDownBallsCollection(int x, int y)
         {
             var collectedBalls = new List<Ball> {Balls[x, y]};
@@ -154,6 +201,10 @@ namespace Balls
             return collectedBalls;
         }
 
+        /// <summary>
+        /// Revert ball selection
+        /// </summary>
+        /// <param name="secondBall"></param>
         private void StopSwap(Ball secondBall)
         {
             selectedBall.gameObject.GetComponent<Outline>().enabled = false;
@@ -162,19 +213,34 @@ namespace Balls
             selectedBall = null;
         }
 
+        /// <summary>
+        /// Detect if selected ball was clicked again 
+        /// </summary>
+        /// <param name="ballMove"></param>
+        /// <returns>True or false if selected ball was clicked second time</returns>
         private bool IsSelectedBallClickedSecondTime(BallMove ballMove)
         {
             if (selectedBall != ballMove.gameObject.GetComponent<Ball>()) return false;
             selectedBall = null;
             return true;
         }
-
+        
+        /// <summary>
+        /// Check if second selected ball near to first one
+        /// </summary>
+        /// <param name="secondBall"></param>
+        /// <returns>Status if two balls is near to each other</returns>
         private bool IsBallsNear(Ball secondBall) =>
             IsNearBottomCell(secondBall) ||
             IsNearTopCell(secondBall) ||
             IsNearLeftCell(secondBall) ||
             IsNearRightCell(secondBall);
 
+        /// <summary>
+        /// Check right cell
+        /// </summary>
+        /// <param name="secondBall"></param>
+        /// <returns>Status if second ball near on right</returns>
         private bool IsNearRightCell(Ball secondBall)
         {
             var rightCellPosition = selectedBall.PlaceInFieldArray + new Vector2(0, 1);
@@ -182,6 +248,11 @@ namespace Balls
             return rightCellPosition == secondBall.PlaceInFieldArray;
         }
 
+        /// <summary>
+        /// Check left cell
+        /// </summary>
+        /// <param name="secondBall"></param>
+        /// <returns>Status if second ball near on left</returns>
         private bool IsNearLeftCell(Ball secondBall)
         {
             var leftCellPosition = selectedBall.PlaceInFieldArray - new Vector2(0, 1);
@@ -189,6 +260,11 @@ namespace Balls
             return leftCellPosition == secondBall.PlaceInFieldArray;
         }
 
+        /// <summary>
+        /// Check bottom cell
+        /// </summary>
+        /// <param name="secondBall"></param>
+        /// <returns>Status if second ball near on bottom</returns>
         private bool IsNearBottomCell(Ball secondBall)
         {
             var bottomCellPosition = selectedBall.PlaceInFieldArray + new Vector2(1, 0);
@@ -196,6 +272,11 @@ namespace Balls
             return bottomCellPosition == secondBall.PlaceInFieldArray;
         }
 
+        /// <summary>
+        /// Check up cell
+        /// </summary>
+        /// <param name="secondBall"></param>
+        /// <returns>Status if second ball near on up</returns>
         private bool IsNearTopCell(Ball secondBall)
         {
             var topCellPosition = selectedBall.PlaceInFieldArray - new Vector2(1, 0);

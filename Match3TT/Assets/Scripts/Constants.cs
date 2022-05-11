@@ -1,4 +1,7 @@
-﻿public static class Constants
+﻿/// <summary>
+/// Application constants
+/// </summary>
+public static class Constants
 {
     public const string Ball = "Ball";
     public const string PlayField = "PlayField";

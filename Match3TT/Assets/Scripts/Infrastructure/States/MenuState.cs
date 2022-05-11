@@ -8,6 +8,9 @@ using UnityEngine.UI;
 
 namespace Infrastructure.States
 {
+    /// <summary>
+    /// Menu state
+    /// </summary>
     public class MenuState : IState
     {
         private readonly GameStateMachine gameStateMachine;
@@ -21,11 +24,18 @@ namespace Infrastructure.States
             this.sceneLoader = sceneLoader;
         }
 
+        /// <summary>
+        /// Enter to state
+        /// </summary>
         public void Enter() => 
             coroutineRunner.StartCoroutine(OnClickPlayButton());
 
         public void Exit() { }
 
+        /// <summary>
+        /// Add button listener to enter other state
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator OnClickPlayButton()
         {
             while (SceneManager.GetActiveScene().name != SceneNames.MenuScene)

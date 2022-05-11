@@ -7,6 +7,9 @@ using Infrastructure.States;
 
 namespace Infrastructure.GameControl
 {
+    /// <summary>
+    /// Controller of states to rule the application 
+    /// </summary>
     public class GameStateMachine
     {
         private Dictionary<Type, IState> _states;
@@ -22,6 +25,10 @@ namespace Infrastructure.GameControl
             };
         }
 
+        /// <summary>
+        /// Enter to new state
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         public void EnterState<T>() where T : IState
         {
             activeState?.Exit();
@@ -32,6 +39,11 @@ namespace Infrastructure.GameControl
             activeState = state;
         }
 
+        /// <summary>
+        /// Find state in dictionary
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>Return found state</returns>
         private IState GetState<T>() where T : IState => 
             _states[typeof(T)];
     }
